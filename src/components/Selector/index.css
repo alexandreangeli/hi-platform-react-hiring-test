@@ -1,0 +1,120 @@
+.selector {
+  width: 100%;
+}
+
+.selector__header {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.selector__header:hover {
+  background-color: var(--medium-gray);
+}
+
+.selector__header__left {
+  padding: 15px 30px;
+  display: flex;
+  flex-grow: 1;
+}
+
+.selector__header__left__checkbox-input {
+  display: none;
+  pointer-events: none;
+}
+
+.selector__header__left__checkbox-label {
+  pointer-events: none;
+}
+
+.selector__header__left__checkbox-input
+  + .selector__header__left__checkbox-label:before {
+  border: 2px solid var(--dark-gray);
+  border-radius: 2px;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 16px;
+  width: 16px;
+  margin-top: 1px;
+}
+
+.selector__header__left__checkbox-input:checked
+  + .selector__header__left__checkbox-label:before {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: var(--white);
+  content: "\2713";
+  text-align: center;
+}
+
+.selector--indeterminate
+  > .selector__header
+  .selector__header__left__checkbox-input
+  + .selector__header__left__checkbox-label:before {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: var(--white);
+  content: "\2013";
+  text-align: center;
+}
+
+.selector__header__left__checkbox-input:focus
+  + .selector__header__left__checkbox-label::before {
+  outline: none;
+}
+
+.selector__header__left__checkbox-input {
+  margin: 0;
+  height: 100%;
+  pointer-events: none;
+  transform: scale(1.25);
+}
+
+.selector__header__left__title {
+  padding: 0 20px;
+  font-size: 20px;
+}
+
+.selector__header__right {
+  padding: 15px 30px;
+  width: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.selector__header__right__arrow {
+  border-right: 1.5px solid black;
+  border-bottom: 1.5px solid black;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg) translateX(-2px) translateY(-2px);
+  transition: all 0.3s ease;
+}
+.selector--opened > .selector__header .selector__header__right__arrow {
+  transform: rotate(-135deg) translateX(-1px) translateY(-1px);
+  border-color: var(--blue);
+}
+
+.selector__body {
+  max-height: 0;
+  overflow: hidden;
+  /* transition: max-height 0.5s cubic-bezier(0, 1, 0, 1); */
+}
+.selector--opened > .selector__body {
+  overflow: auto;
+  max-height: 9999px;
+  /* animation: hide-scroll 0.5s backwards;
+  transition: max-height 0.5s cubic-bezier(1, 0, 1, 0); */
+}
+/* @keyframes hide-scroll {
+  from,
+  to {
+    overflow: hidden;
+  }
+} */
+
+.section-4-accordion-item-body-wrapper {
+  background-color: var(--white);
+}

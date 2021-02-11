@@ -1,0 +1,16 @@
+:root {
+  --white: #ffffff;
+  --blue: #00aeef;
+  --light-gray: #eeeeee;
+  --medium-gray: #dadada;
+  --dark-gray: #757575;
+}
+
+html {
+  font-family: sans-serif;
+  background-color: var(--light-gray);
+}
+
+body {
+  margin: 0;
+}
