@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import "./index.css";
 import Selector from "../Selector";
-import data from "../../data.json";
 
-function SelectorsWrapper() {
+function SelectorsWrapper({ data }) {
   const [selectors, setSelectors] = useState([]);
 
   useEffect(() => {
