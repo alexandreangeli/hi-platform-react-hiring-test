@@ -100,20 +100,11 @@
 .selector__body {
   max-height: 0;
   overflow: hidden;
-  /* transition: max-height 0.5s cubic-bezier(0, 1, 0, 1); */
 }
 .selector--opened > .selector__body {
   overflow: auto;
   max-height: 9999px;
-  /* animation: hide-scroll 0.5s backwards;
-  transition: max-height 0.5s cubic-bezier(1, 0, 1, 0); */
 }
-/* @keyframes hide-scroll {
-  from,
-  to {
-    overflow: hidden;
-  }
-} */
 
 .section-4-accordion-item-body-wrapper {
   background-color: var(--white);

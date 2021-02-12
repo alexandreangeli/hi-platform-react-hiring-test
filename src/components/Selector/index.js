@@ -42,12 +42,12 @@ function Selector({ selectorObject, toggleActive, toggleOpened }) {
       </div>
 
       <div className="selector__body">
-        {Object.keys(selectorObject.children).map((index) => (
+        {selectorObject.children.map((child) => (
           <Selector
-            selectorObject={selectorObject.children[index]}
+            key={child.id}
+            selectorObject={child}
             toggleActive={toggleActive}
             toggleOpened={toggleOpened}
-            key={selectorObject.children[index].id}
           />
         ))}
       </div>

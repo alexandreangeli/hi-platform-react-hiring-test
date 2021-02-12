@@ -1,62 +1,70 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./index.css";
 import Selector from "../Selector";
 import data from "../../data.json";
 
 function SelectorsWrapper() {
-  const [selectors, setSelectors] = useState(
-    addActiveOpenedAndIndeterminateProperties(
-      JSON.parse(localStorage.getItem("HI_PLATFORM_VUE_TEST_DATA")) || data
-    )
-  );
+  const [selectors, setSelectors] = useState([]);
 
-  function addActiveOpenedAndIndeterminateProperties(selectors) {
-    for (let index in selectors) {
-      if (!selectors[index].hasOwnProperty("active")) {
-        selectors[index].active = false;
-      }
-      if (!selectors[index].hasOwnProperty("opened")) {
-        selectors[index].opened = false;
-      }
-      if (!selectors[index].hasOwnProperty("indeterminate")) {
-        selectors[index].indeterminate = false;
-      }
+  useEffect(() => {
+    function turnObjectToArray(array, object) {
+      for (let index in object) {
+        let element = object[index];
 
-      addActiveOpenedAndIndeterminateProperties(selectors[index].children);
-    }
-    return selectors;
-  }
-
-  function findSelectorAndParentByID(selectors, id) {
-    for (let index in selectors) {
-      if (selectors[index].id === id) {
-        return {
-          selector: selectors[index],
-          parent: undefined,
-        };
-      } else {
-        let selectorAndParent = findSelectorAndParentByID(
-          selectors[index].children,
-          id
-        );
-        if (selectorAndParent) {
-          return {
-            selector: selectorAndParent.selector,
-            parent: selectorAndParent.parent || selectors[index],
-          };
+        if (!element.hasOwnProperty("active")) {
+          element.active = false;
         }
+        if (!element.hasOwnProperty("opened")) {
+          element.opened = false;
+        }
+        if (!element.hasOwnProperty("indeterminate")) {
+          element.indeterminate = false;
+        }
+        if (!element.hasOwnProperty("idsTrace")) {
+          element.idsTrace = [element.id];
+        }
+
+        let children = { ...element.children };
+        element.children = [];
+        for (let childIndex in children) {
+          children[childIndex].idsTrace = [...element.idsTrace];
+          children[childIndex].idsTrace.push(children[childIndex].id);
+        }
+
+        array.push(element);
+        turnObjectToArray(element.children, children);
       }
+
+      return array;
     }
+
+    let array =
+      JSON.parse(localStorage.getItem("HI_PLATFORM_VUE_TEST_DATA")) ||
+      turnObjectToArray([], data);
+
+    setSelectors(array);
+  }, []);
+
+  function findSelectorInSelectorsArray(idsTrace, selectors) {
+    return idsTrace.reduce((sel, currentId) => {
+      let parent = !!sel ? sel.selector : undefined;
+      let selector = !!sel
+        ? sel.selector.children.find((c) => c.id === currentId)
+        : selectors.find((s) => s.id === currentId);
+
+      return {
+        selector,
+        parent,
+      };
+    }, undefined);
   }
 
   function updateSelectorState(selector, selectors) {
-    let childrenIndexes = Object.keys(selector.children);
-
-    let hasUnselectedChildren = !!childrenIndexes.find(
-      (i) => !selector.children[i].active || selector.children[i].indeterminate
+    let hasUnselectedChildren = !!selector.children.find(
+      (c) => !c.active || c.indeterminate
     );
-    let hasSelectedChildren = !!childrenIndexes.find(
-      (i) => !!selector.children[i].active || selector.children[i].indeterminate
+    let hasSelectedChildren = !!selector.children.find(
+      (c) => !!c.active || c.indeterminate
     );
 
     setActive(
@@ -66,8 +74,11 @@ function SelectorsWrapper() {
       hasUnselectedChildren && hasSelectedChildren
     );
 
-    let { parent } = findSelectorAndParentByID(selectors, selector.id);
-    if (!!parent) {
+    if (selector.idsTrace.length > 1) {
+      let { parent } = findSelectorInSelectorsArray(
+        selector.idsTrace,
+        selectors
+      );
       updateSelectorState(parent, selectors);
     }
   }
@@ -77,28 +88,19 @@ function SelectorsWrapper() {
     selector.indeterminate = indeterminate;
 
     if (!selector.indeterminate) {
-      for (let index in selector.children) {
-        if (
-          (selector.active && !selector.children[index].active) ||
-          (!selector.active && selector.children[index].active)
-        ) {
-          setActive(
-            selector.children[index],
-            selectors,
-            !selector.children[index].active,
-            false
-          );
+      for (let child of selector.children) {
+        if (selector.active !== child.active) {
+          setActive(child, selectors, !child.active, false);
         }
       }
     }
   }
 
   function toggleActive(selectorObj) {
-    let selectorsCopy = { ...selectors };
-
-    let { selector, parent } = findSelectorAndParentByID(
-      selectorsCopy,
-      selectorObj.id
+    let selectorsCopy = [...selectors];
+    let { selector, parent } = findSelectorInSelectorsArray(
+      selectorObj.idsTrace,
+      selectorsCopy
     );
 
     setActive(selector, selectorsCopy, !selectorObj.active, false);
@@ -116,20 +118,23 @@ function SelectorsWrapper() {
   }
 
   function toggleOpened(selectorObj) {
-    let selectorsCopy = { ...selectors };
-    let { selector } = findSelectorAndParentByID(selectorsCopy, selectorObj.id);
+    let selectorsCopy = [...selectors];
+    let { selector } = findSelectorInSelectorsArray(
+      selectorObj.idsTrace,
+      selectorsCopy
+    );
     selector.opened = !selector.opened;
     setSelectors(selectorsCopy);
   }
 
   return (
     <div className="selectors-wrapper">
-      {Object.keys(selectors).map((index) => (
+      {selectors.map((selector) => (
         <Selector
-          selectorObject={selectors[index]}
+          key={selector.id}
+          selectorObject={selector}
           toggleActive={toggleActive}
           toggleOpened={toggleOpened}
-          key={selectors[index].id}
         />
       ))}
     </div>
