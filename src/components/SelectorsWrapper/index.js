@@ -109,10 +109,13 @@ function SelectorsWrapper({ data }) {
     }
 
     setSelectors(selectorsCopy);
+    saveSelectorsInLocalStorage(selectorsCopy);
+  }
 
+  function saveSelectorsInLocalStorage(selectors) {
     localStorage.setItem(
       "HI_PLATFORM_VUE_TEST_DATA",
-      JSON.stringify(selectorsCopy)
+      JSON.stringify(selectors)
     );
   }
 
@@ -124,6 +127,7 @@ function SelectorsWrapper({ data }) {
     );
     selector.opened = !selector.opened;
     setSelectors(selectorsCopy);
+    saveSelectorsInLocalStorage(selectorsCopy);
   }
 
   return (
