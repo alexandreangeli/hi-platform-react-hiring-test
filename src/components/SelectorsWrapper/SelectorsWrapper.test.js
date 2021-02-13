@@ -62,7 +62,7 @@ beforeEach(() => {
   wrapper = mount(<SelectorsWrapper data={mockData} />);
 });
 
-test("renders all selectors in correct state and structure", () => {
+test("renders all selectors in correct structure order and classes", () => {
   expect(wrapper.find(".selector--active").length).toBe(0);
   expect(wrapper.find(".selector--opened").length).toBe(0);
   expect(wrapper.find(".selector--indeterminate").length).toBe(0);
@@ -134,7 +134,7 @@ test("select and unselect first selector and all his children", () => {
   expect(wrapper.find(".selector--active").length).toBe(0);
 });
 
-test("set and unset indeterminate state to parents", () => {
+test("set and unset indeterminate state to parents when toggling child", () => {
   wrapper
     .find(".selector")
     .at(0)
